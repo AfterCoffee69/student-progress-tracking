@@ -5,27 +5,26 @@
 namespace StudentsTracker.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate7 : Migration
+    public partial class InitialCreate3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
+            migrationBuilder.AddColumn<int>(
                 name: "TeacherId",
-                table: "Exams",
+                table: "Credits",
                 type: "int",
                 nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                defaultValue: 0);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Exams_TeacherId",
-                table: "Exams",
+                name: "IX_Credits_TeacherId",
+                table: "Credits",
                 column: "TeacherId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Exams_Teachers_TeacherId",
-                table: "Exams",
+                name: "FK_Credits_Teachers_TeacherId",
+                table: "Credits",
                 column: "TeacherId",
                 principalTable: "Teachers",
                 principalColumn: "Id",
@@ -36,20 +35,16 @@ namespace StudentsTracker.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Exams_Teachers_TeacherId",
-                table: "Exams");
+                name: "FK_Credits_Teachers_TeacherId",
+                table: "Credits");
 
             migrationBuilder.DropIndex(
-                name: "IX_Exams_TeacherId",
-                table: "Exams");
+                name: "IX_Credits_TeacherId",
+                table: "Credits");
 
-            migrationBuilder.AlterColumn<string>(
+            migrationBuilder.DropColumn(
                 name: "TeacherId",
-                table: "Exams",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int");
+                table: "Credits");
         }
     }
 }

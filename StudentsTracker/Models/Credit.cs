@@ -6,5 +6,6 @@
         public string Name { get; set; }
         public bool IsPassed { get; set; }
         public DateTime Date { get; set; }
+        public Teacher Teacher { get; set; }
     }
 }

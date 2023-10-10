@@ -12,8 +12,8 @@ using StudentsTracker.Data;
 namespace StudentsTracker.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230926062811_InitialCreate4")]
-    partial class InitialCreate4
+    [Migration("20231008073920_InitialCreate2")]
+    partial class InitialCreate2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,7 +50,7 @@ namespace StudentsTracker.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Credit");
+                    b.ToTable("Credits");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Exam", b =>
@@ -74,11 +74,33 @@ namespace StudentsTracker.Migrations
                     b.Property<int?>("StudentId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("StudentId");
 
+                    b.HasIndex("TeacherId");
+
                     b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("StudentsTracker.Models.Faculty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Faculties");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Group", b =>
@@ -111,34 +133,18 @@ namespace StudentsTracker.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Majors");
-                });
-
-            modelBuilder.Entity("StudentsTracker.Models.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int?>("FacultyId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.HasIndex("FacultyId");
+
+                    b.ToTable("Majors");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Student", b =>
@@ -167,6 +173,48 @@ namespace StudentsTracker.Migrations
                     b.ToTable("Students");
                 });
 
+            modelBuilder.Entity("StudentsTracker.Models.Teacher", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teachers");
+                });
+
+            modelBuilder.Entity("StudentsTracker.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("StudentsTracker.Models.Credit", b =>
                 {
                     b.HasOne("StudentsTracker.Models.Student", null)
@@ -179,6 +227,14 @@ namespace StudentsTracker.Migrations
                     b.HasOne("StudentsTracker.Models.Student", null)
                         .WithMany("Exams")
                         .HasForeignKey("StudentId");
+
+                    b.HasOne("StudentsTracker.Models.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Group", b =>
@@ -186,6 +242,13 @@ namespace StudentsTracker.Migrations
                     b.HasOne("StudentsTracker.Models.Major", null)
                         .WithMany("Groups")
                         .HasForeignKey("MajorId");
+                });
+
+            modelBuilder.Entity("StudentsTracker.Models.Major", b =>
+                {
+                    b.HasOne("StudentsTracker.Models.Faculty", null)
+                        .WithMany("Majors")
+                        .HasForeignKey("FacultyId");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Student", b =>
@@ -197,6 +260,11 @@ namespace StudentsTracker.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("StudentsTracker.Models.Faculty", b =>
+                {
+                    b.Navigation("Majors");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Group", b =>

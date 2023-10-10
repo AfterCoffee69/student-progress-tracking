@@ -12,7 +12,7 @@ using StudentsTracker.Data;
 namespace StudentsTracker.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230926063353_InitialCreate5")]
+    [Migration("20231008074833_InitialCreate5")]
     partial class InitialCreate5
     {
         /// <inheritdoc />
@@ -46,9 +46,14 @@ namespace StudentsTracker.Migrations
                     b.Property<int?>("StudentId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Credits");
                 });
@@ -74,9 +79,14 @@ namespace StudentsTracker.Migrations
                     b.Property<int?>("StudentId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Exams");
                 });
@@ -142,27 +152,6 @@ namespace StudentsTracker.Migrations
                     b.ToTable("Majors");
                 });
 
-            modelBuilder.Entity("StudentsTracker.Models.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products");
-                });
-
             modelBuilder.Entity("StudentsTracker.Models.Student", b =>
                 {
                     b.Property<int>("Id")
@@ -182,9 +171,14 @@ namespace StudentsTracker.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Students");
                 });
@@ -205,9 +199,35 @@ namespace StudentsTracker.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Teachers");
+                });
+
+            modelBuilder.Entity("StudentsTracker.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Credit", b =>
@@ -215,6 +235,14 @@ namespace StudentsTracker.Migrations
                     b.HasOne("StudentsTracker.Models.Student", null)
                         .WithMany("Credits")
                         .HasForeignKey("StudentId");
+
+                    b.HasOne("StudentsTracker.Models.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Exam", b =>
@@ -222,6 +250,14 @@ namespace StudentsTracker.Migrations
                     b.HasOne("StudentsTracker.Models.Student", null)
                         .WithMany("Exams")
                         .HasForeignKey("StudentId");
+
+                    b.HasOne("StudentsTracker.Models.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Group", b =>
@@ -246,7 +282,26 @@ namespace StudentsTracker.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("StudentsTracker.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StudentsTracker.Models.Teacher", b =>
+                {
+                    b.HasOne("StudentsTracker.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StudentsTracker.Models.Faculty", b =>

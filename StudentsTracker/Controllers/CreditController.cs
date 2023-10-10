@@ -47,6 +47,7 @@ namespace StudentsTracker.Controllers
                 credit.Name = field.Name;
                 credit.IsPassed = field.IsPassed;
                 credit.Date = field.Date;
+                credit.Teacher = field.Teacher;
             }
 
             await _appDbContext.SaveChangesAsync();

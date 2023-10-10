@@ -47,6 +47,7 @@ namespace StudentsTracker.Controllers
                 exam.Name = field.Name;
                 exam.Teacher = field.Teacher;
                 exam.Grade = field.Grade;
+                exam.Date = field.Date;
             }
 
             await _appDbContext.SaveChangesAsync();

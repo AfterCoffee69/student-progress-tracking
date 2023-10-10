@@ -1,6 +1,7 @@
 ﻿using BCrypt.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.IdentityModel.Tokens;
 using StudentsTracker.Data;
@@ -34,23 +35,21 @@ namespace StudentsTracker.Controllers
 
             user.PasswordHash = passwordHash;
 
-            _appDbContext.users.Add(user);
+            _appDbContext.Users.Add(user);
             await _appDbContext.SaveChangesAsync();
 
             return user;
         }
 
         [HttpPost("login")]
-        public ActionResult<User> Login(UserDto request)
+        public async Task<ActionResult<User>> Login(UserDto userDto)
         {
-            if (user.Username != request.Username)
-            {
-                return BadRequest("User not found.");
-            }
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Username == userDto.Username);
 
-            if(!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(userDto.Password, user.PasswordHash))
             {
-                return BadRequest("Wrong password");
+                return null;
             }
 
             string token = CreateToken(user);
